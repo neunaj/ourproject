@@ -22,6 +22,7 @@ read -p "Enter choice [1-6]: " choice
 read -p "Which column numbers? (e.g., 1 2 3): " columns
 
 case $choice in 
+
 1)
   for col in $columns;
   do         # loop through each column
@@ -37,16 +38,63 @@ case $choice in
   echo "Mean of column $col = $mean"  
 done                           
 ;;                              # end of case
+
 2)
-    for col in $columns; do
-      awk -v c="$col" '{freq[$c]++} END{for(val in freq){if(freq[val]>max){max=freq[val];mode=val}} print "Mode of column", c, "=", mode, "(", max, "times)"}' cleaned_data.txt
-    done
-    ;;
- 3)
-    for col in $columns; do
-      awk -v c="$col" 'NR==1 {min=max=$c} {if($c<min)min=$c; if($c>max)max=$c} END{print "Column", c, "-> Min =", min, ", Max =", max}' cleaned_data.txt
-    done
-    ;;
+      # loop through each column 
+for col in $columns; do
+# use awk to calculate the mode for the specified column
+  awk -v c="$col" '
+  {
+    # increment the frequency count for the value in column c
+        freq[$c]++     
+  }
+  END {
+        # variable to store the mode
+          mode = ""     
+        # variable to store the highest frequency
+           max = 0        
+
+    # loop through all values to find the one with the highest frequency
+        for (v in freq) {
+          if (freq[v] > max) {
+           # update the highest frequency
+              max = freq[v]   
+           # update the mode
+              mode = v        
+      }
+    }
+    # print the result: column number, mode value, and number of times it repeated
+    print "Mode of column " c " = " mode " (occurred " max " times)"
+  }' cleaned_data.txt  # read from the cleaned data file
+
+done # end of loop 
+    ;; # end of case option 2
+    
+    
+ 3)   
+    # loop through each column 
+for col in $columns; do
+    min=   # initialize variable to store the minimum value
+    max=   # initialize variable to store the maximum value
+
+    # read each line from the file cleaned_data.txt
+    while read line; do
+        # extract the value from the current column using awk
+        number=$(echo "$line" | awk -v c="$col" '{print $c}')
+        # check if min is empty or the current number is less than min
+        if [[ -z "$min" || "$number" < "$min" ]]; then
+            min=$number  # update min with the current number
+        fi
+        # check if max is empty or the current number is greater than max
+        if [[ -z "$max" || "$number" > "$max" ]]; then
+            max=$number  # update max with the current number
+        fi
+    done < cleaned_data.txt  # read from cleaned file
+    # print the result
+    echo "Column $col => Min = $min , Max = $max"
+done  # end of loop 
+
+;;  # end of case option 3
     
  4)
     ;;
