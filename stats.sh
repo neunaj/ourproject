@@ -6,8 +6,10 @@ read -p "please enter the name of the file (numbers only) " file
 if [ ! -f "$file" ]; then
    echo "file not found"
 fi
+# Filter lines with only integers 
+# and remove leading/trailing spaces
+grep -E '^[0-9]+([[:space:]]+[0-9]+)*$' "$file" | sed 's/^[ \t]*//;s/[ \t]*$//' > cleaned_data.txt
 
-grep -E '^([0-9]*\.[0-9]+|[0-9]+)$' "$file" | sed 's/^[ \t]*//;s/[ \t]*$//' > cleaned_data.txt
 
 echo
 echo "Choose a statistic to calculate:"
@@ -16,8 +18,7 @@ echo "2) Mode"
 echo "3) Minimum and Maximum"
 echo "4) Standard Deviation"
 echo "5) Sum"
-echo "6) All Statistics"
-read -p "Enter choice [1-6]: " choice
+read -p "Enter choice [1-5]: " choice
 
 read -p "Which column numbers? (e.g., 1 2 3): " columns
 
@@ -97,6 +98,20 @@ done  # end of loop
 ;;  # end of case option 3
     
  4)
+     for col in $columns; do
+    # Using awk to calculate the mean and standard deviation for the specified column
+    awk -v c="$col" '
+    { 
+      sum += $c; 
+      sumsq += ($c)^2; 
+      count++ 
+    }
+    END {
+      mean = sum / count;  
+      stddev = sqrt(sumsq / count - mean^2);  # Calculate standard deviation
+      printf "Standard Deviation of column %d = %.2f\n", c, stddev;  # Print result
+    }' cleaned_data.txt  # Process the cleaned data file
+  done
     ;;
     
  5)
@@ -110,8 +125,7 @@ done  # end of loop
     done
     ;;
     
- 6)
-    ;;
+ 
 *)
     echo "Invalid choice"
     ;;
