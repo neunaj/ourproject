@@ -97,8 +97,24 @@ done  # end of loop
 ;;  # end of case option 3
     
  4)
-    ;;
-    
+for col in $columns; do
+  # Use gawk to be able to use sqrt() function (square root)
+  gawk -v c=$col '
+  {
+    val = $c               # Get the value from the selected column
+    sum += val             # Add values to calculate the mean later
+    sumsq += val * val     # Add squares of values to calculate variance
+    count++                # Count how many values we have
+  }
+  END {
+    mean = sum / count     # Calculate the mean (average)
+    stddev= sqrt((sumsq / count) - (mean * mean))  # Calculate standard deviation
+    print "Standard Deviation of column %d = %.2f\n", c, stddev  # Print the result
+  }' cleaned_data.txt
+
+done
+;;
+
  5)
     for col in $columns; do       # loop through columns
       sum=0                       # start sum at 0
