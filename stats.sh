@@ -35,7 +35,8 @@ case $choice in
     sum=$((sum + number))       # add value to sum
     count=$((count + 1))        # increase count
   done < cleaned_data.txt       # read from cleaned file
-  mean=$((sum / count))         # calculate mean
+  mean=$(awk "BEGIN {print $sum / $count}")
+ mean         # calculate mean
   echo "Mean of column $col = $mean"  
 done                           
 ;;                              # end of case
