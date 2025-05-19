@@ -74,26 +74,34 @@ done # end of loop
     
     
  3)   
-    # loop through each column 
+       # loop through each column
 for col in $columns; do
-    min=   # initialize variable to store the minimum value
-    max=   # initialize variable to store the maximum value
 
-    # read each line from the file cleaned_data.txt
-    while read line; do
-        # extract the value from the current column using awk
-        number=$(echo "$line" | awk -v c="$col" '{print $c}')
-        # check if min is empty or the current number is less than min
-        if [[ -z "$min" || "$number" < "$min" ]]; then
-            min=$number  # update min with the current number
-        fi
-        # check if max is empty or the current number is greater than max
-        if [[ -z "$max" || "$number" > "$max" ]]; then
-            max=$number  # update max with the current number
-        fi
-    done < cleaned_data.txt  # read from cleaned file
-    # print the result
-    echo "Column $col => Min = $min , Max = $max"
+    # use awk to calculate min and max using NR to initialize on first line
+    awk -v c="$col" '
+    {
+        value = $c
+
+        if (NR == 1) {
+            # On the first line, initialize min and max
+            min = value
+            max = value
+        } else {
+            # Compare with current min and max
+            if (value < min) {
+                min = value
+            }
+            if (value > max) {
+                max = value
+            }
+        }
+    }
+
+    END {
+        # print the result after processing all lines
+        print "Column", c, "=> Min =", min, ", Max =", max
+    } ' cleaned_data.txt
+    
 done  # end of loop 
 
 ;;  # end of case option 3
