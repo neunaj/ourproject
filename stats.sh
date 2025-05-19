@@ -70,41 +70,42 @@ for col in $columns; do
   }' cleaned_data.txt  # read from the cleaned data file
 
 done # end of loop 
-    ;; # end of case option 2
+;; # end of case option 2
     
     
  3)   
        # loop through each column
 for col in $columns; do
 
-    # use awk to calculate min and max using NR to initialize on first line
-    awk -v c="$col" '
-    {
-        value = $c
+# Use awk to calculate the minimum and maximum for each column
+awk -v c="$col" '
+{
+Get the value of the current column
+value = $c
 
-        if (NR == 1) {
-            # On the first line, initialize min and max
-            min = value
-            max = value
-        } else {
-            # Compare with current min and max
-            if (value < min) {
-                min = value
-            }
-            if (value > max) {
-                max = value
-            }
-        }
+# On the first line, initialize min and max with the first value
+   if (NR == 1) {
+      min = value
+      max = value
     }
+       else {
+# Compare the current value with the minimum value
+    if (value < min) {
+         min = value
+}
+# Compare the current value with the maximum value
+     if (value > max) {
+    max = value
+     }
 
-    END {
-        # print the result after processing all lines
-        print "Column", c, "=> Min =", min, ", Max =", max
-    } ' cleaned_data.txt
-    
-done  # end of loop 
-
-;;  # end of case option 3
+}
+END {
+print the result : column number, msx/min values
+print "Column", c, "=> Min =", min, ", Max =", max
+}
+' clean_data.txt # read from the cleaned data file
+ done  # end of loop 
+ ;;  # end of case option 3
     
  4)
      for col in $columns; do
